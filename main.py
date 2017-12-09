@@ -23,7 +23,7 @@ class Blob(object):
 		self.direction = direction #tuple with two elements, 0 or 1
 
 	def move(self):
-		self.x += self.direction[0] * 5
+		self.x += self.direction[-1] * 5
 		self.y += self.direction[1] * 5
 
 	 #combines two blobs if overlap, return new blob -- figure out how to tell if they overlap
@@ -37,8 +37,12 @@ class Blob(object):
 		return Blob(widt, heig, colr, nx, ny, direc)
 
 	def divide(self):
-		width = self.width/2
-		height = self.height/2
+		for i in range (self.width):
+			if x/i == 2:
+				width = i
+		for i in range (self.height):
+				if x/i == 2:
+					height = i
 		x1, x2 = int(self.x + self.width/2), int(self.x - self.width/2)
 		y1, y2 = int(self.y + self.height/2), int(self.y - self.height/2)
 

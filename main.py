@@ -67,8 +67,12 @@ class Blob(pygame.sprite.Sprite):
 
 	 #combines two blobs if overlap, return new blob -- figure out how to tell if they overlap
 	def combine(self, another):
-		heig = int(sqrt(((self.width*self.height + another.width*another.height)*(self.width*another.height + another.height*self.width))/(2 * self.height * another.height)))
-		widt = int(self.width*self.height/heig)
+		area1 = self.height*self.width
+		area2 = another.height*another.width
+
+
+		widt = int(sqrt((area1+area2)/(2*((self.width/self.height)+(another.width/another.height)))))
+		heig = (area1+area2)/widt
 
 		colr = (int((self.col[0] + another.col[0])/2), int((self.col[1] + another.col[1])/2), int((self.col[2] + another.col[2])/2))
 		nx = int((self.rect.x + self.rect.x)/2)
@@ -118,8 +122,6 @@ while not done:
 	blobs.draw(screen)
 	blobs.update()
 
-
-
-	clock.tick(60)
+	clock.tick(30)
 	pygame.display.flip()
 

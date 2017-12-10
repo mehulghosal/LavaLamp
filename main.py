@@ -53,7 +53,11 @@ class Blob(pygame.sprite.Sprite):
 	
 		colideList = pygame.sprite.spritecollide(self, blobs, False)
 		for i in colideList:
-			self.combine(i)
+			if not i is self:
+				self.combine(i)
+
+		if self.width*self.height >= 200*200:
+			self.divide()
 
 			'''	combReturn = sprite.combine(i)
 				newBlob = combReturn[0]
@@ -64,45 +68,78 @@ class Blob(pygame.sprite.Sprite):
 
 	 #combines two blobs if overlap, return new blob -- figure out how to tell if they overlap
 	def combine(self, another):
-		area1 = self.height*self.width
-		area2 = another.height*another.width
+		#print(self.alive(), another.alive())
+		# area1 = self.height*self.width
+		# area2 = another.height*another.width
 
 
-		widt = int(sqrt((area1+area2)/(2*((self.width/self.height)+(another.width/another.height)))))
-		heig = (area1+area2)/widt
+		# widt = int(sqrt((area1+area2)/(2*((self.width/self.height)+(another.width/another.height)))))
+		# heig = (area1+area2)/widt
+
+		widt = self.width+another.width
+		heig = self.height+another.height
 
 		colr = (int((self.col[0] + another.col[0])/2), int((self.col[1] + another.col[1])/2), int((self.col[2] + another.col[2])/2))
 		nx = int((self.rect.x + self.rect.x)/2)
 		ny = int((self.rect.y + self.rect.y)/2)
 		direc = (self.dirx * another.dirx, self.diry * another.diry)
-		blobs.remove(another)
+
+		self.kill()
 		another.kill()
-		self.dirx = direc[0]
-		self.diry = direc[1]
-		self.width = widt
-		self.heig = heig
-		self.col = colr
+		b = Blob(widt,heig,colr)
+		b.dirx = direc[0]
+		b.rect.x = nx
+		b.diry = direc[1]
+		b.rect.y = ny
+		blobs.add(b)
 
-	'''
+		'''if self.alive(): 
+									another.kill()
+									self.dirx = direc[0]
+									self.diry = direc[1]
+									self.width = widt
+									self.height = heig
+									self.col = colr
+									another.dirx = direc[0]
+									another.diry = direc[1]
+									another.width = widt
+									another.height = heig
+									another.col = colr
+									#print(self.width, another.width, widt, self.width)
+						
+								else:
+									self.kill()
+									another.dirx = direc[0]
+									another.diry = direc[1]
+									another.width = widt
+									another.height = heig
+									another.col = colr
+									self.dirx = direc[0]
+									self.diry = direc[1]
+									self.width = widt
+									self.height = heig
+									self.col = colr
+									print(self.width, another.width, widt, another.width)'''
+
+
+	
 	def divide(self):
-		for i in range (self.width):
-			if x/i == 4:
-				width = i
-		for i in range (self.height):
-				if x/i == 4:
-					height = i
-		x1, x2 = int(self.x + width*2), int(self.x - width*2)
-		y1, y2 = int(self.y + height*2), int(self.y - height*2)
-
-		return Blob(width, heigth, self.col, x1, y1, direction), Blob(width, height, self.col, x2, y2)
-
-	def draw(self): 
-		pygame.draw.ellipse(screen, self.col, Rect())'''
+		self.kill()
+		print("divide")
+		c1 = Blob(self.width/2, self.height, self.col)
+		c1.rect.x = self.rect.x + self.width
+		c1.rect.y = self.rect.y
+		c1.dirx = 1
+		c2 = Blob(self.width/2, self.height, self.col)
+		c1.rect.x = self.rect.x - self.width
+		c1.rect.y = self.rect.y
+		c2.dirx = -1
+		blobs.add(c1,c2)
 
 
 blobs = pygame.sprite.Group()
 
-for i in range(12):
+for i in range(8):
 	#			#width 			 #height 			red					  green 		 blue
 	blob = Blob(randint(50,125), randint(50, 125), (150 + randint(0,100), randint(0,50), randint(0,50)))
 	blob.rect.center =(randint(blob.width,maxwidth-blob.width), randint(blob.height, maxheight-blob.height))
@@ -122,6 +159,6 @@ while not done:
 	blobs.draw(screen)
 	blobs.update()
 
-	clock.tick(10)
+	clock.tick(30)
 	pygame.display.flip()
 

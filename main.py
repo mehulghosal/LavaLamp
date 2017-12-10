@@ -146,14 +146,18 @@ def A(blobList):
 	return points
 
 def B(blobList):
-	points = [(200,50),(100,170),(300,170),(175,240),(75,310),(300,310),(200,400)]
+	points = [(200,70),(100,170),(300,170),(175,240),(75,310),(300,310),(200,400)]
 	for i in range(len(blobList)):
 		blobList[i].dirx = copysign(1, points[i][0] - blobList[i].rect.center[0]) *randint(1,3)
 		blobList[i].diry = copysign(1, points[i][1] - blobList[i].rect.center[1]) *randint(1,3)
 	return points
 
-def C():
-	pass
+def C(blobList):
+	points = [(340,116), (270,80),(130,180),(60,325),(130, 470), (270,580), (340, 530)]
+	for i in range(len(blobList)):
+		blobList[i].dirx = copysign(1, points[i][0] - blobList[i].rect.center[0]) *randint(1,3)
+		blobList[i].diry = copysign(1, points[i][1] - blobList[i].rect.center[1]) *randint(1,3)
+	return points
 
 blobs = pygame.sprite.Group()
 

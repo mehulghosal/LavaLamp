@@ -1,8 +1,8 @@
 import sys, pygame
-from colors import *
+#from colors import *
 from random import *
 from math import *
-
+white = (255,255,255)
 pygame.init()
 
 
@@ -15,20 +15,20 @@ pygame.display.flip()
 # bgfdnmyd
 
 class Blob(pygame.sprite.Sprite):
-	def __init__(self, width, height, col):#all measurements are in pixels
+	def __init__(self, width, height, col, **kwargs):#all measurements are in pixels
 		self.width = width
 		self.height = height
 		self.col = col
-		if randint(0,1) == 1: self.dirx = 1
-		else: self.dirx = -1
+		if randint(0,1) == 1: self.dirx = randint(1, 3)
+		else: self.dirx = -1*randint(1,3)
 
-		if randint(0,1) == 1: self.diry = 1
-		else: self.diry = -1
+		if randint(0,1) == 1: self.diry = randint(1,3)
+		else: self.diry = -1*randint(1,3)
 		#self.direction = direction #tuple with two elements, -1 or 1
 
 		super().__init__()
 		self.image = pygame.Surface([width, height])
-		self.image.fill(col)
+		self.image.fill(white)
 		self.rect = self.image.get_rect()
 
 	def update(self):
@@ -50,21 +50,14 @@ class Blob(pygame.sprite.Sprite):
 		self.rect.x += int(self.dirx * 1)
 		self.rect.y += int(self.diry * 1)
 
-	
-		colideList = pygame.sprite.spritecollide(self, blobs, False)
-		for i in colideList:
-			if not i is self:
-				self.combine(i)
+		# colideList = pygame.sprite.spritecollide(self, blobs, False)
+		# for i in colideList:
+		# 	if not i is self:
+		# 		self.combine(i)
 
-		if self.width*self.height >= 200*200:
-			self.divide()
+		# if self.width*self.height >= 200*200:
+		# 	self.divide()
 
-			'''	combReturn = sprite.combine(i)
-				newBlob = combReturn[0]
-				newBlob.rect.x = combReturn[1]
-				newBlob.rect.y = combReturn[2]
-				blobs.remove(sprite, i)
-				blobs.add(newBlob)'''
 
 	 #combines two blobs if overlap, return new blob -- figure out how to tell if they overlap
 	def combine(self, another):
@@ -84,65 +77,58 @@ class Blob(pygame.sprite.Sprite):
 		ny = int((self.rect.y + self.rect.y)/2)
 		direc = (self.dirx * another.dirx, self.diry * another.diry)
 
-		self.kill()
-		another.kill()
-		b = Blob(widt,heig,colr)
-		b.dirx = direc[0]
-		b.rect.x = nx
-		b.diry = direc[1]
-		b.rect.y = ny
-		blobs.add(b)
+		'''self.kill()
+								another.kill()
+								b = Blob(widt,heig,colr)
+								b.dirx = direc[0]
+								b.rect.x = nx
+								b.diry = direc[1]
+								b.rect.y = ny
+								blobs.add(b)'''
 
-		'''if self.alive(): 
-									another.kill()
-									self.dirx = direc[0]
-									self.diry = direc[1]
-									self.width = widt
-									self.height = heig
-									self.col = colr
-									another.dirx = direc[0]
-									another.diry = direc[1]
-									another.width = widt
-									another.height = heig
-									another.col = colr
-									#print(self.width, another.width, widt, self.width)
+		if self.alive(): 
+			another.kill()
+			self.dirx = direc[0]
+			self.diry = direc[1]
+			self.width = widt
+			self.height = heig
+			self.col = colr
+			another = None
+
+			#print(self.width, another.width, widt, self.width)
 						
-								else:
-									self.kill()
-									another.dirx = direc[0]
-									another.diry = direc[1]
-									another.width = widt
-									another.height = heig
-									another.col = colr
-									self.dirx = direc[0]
-									self.diry = direc[1]
-									self.width = widt
-									self.height = heig
-									self.col = colr
-									print(self.width, another.width, widt, another.width)'''
+		else:
+			self.kill()
+			another.dirx = direc[0]
+			another.diry = direc[1]
+			another.width = widt
+			another.height = heig
+			another.col = colr
+			print(self.width, another.width, widt, another.width)
+			self = None
 
 
 	
 	def divide(self):
 		self.kill()
 		print("divide")
-		c1 = Blob(self.width/2, self.height, self.col)
-		c1.rect.x = self.rect.x + self.width
-		c1.rect.y = self.rect.y
-		c1.dirx = 1
-		c2 = Blob(self.width/2, self.height, self.col)
-		c1.rect.x = self.rect.x - self.width
-		c1.rect.y = self.rect.y
-		c2.dirx = -1
-		blobs.add(c1,c2)
-
+		'''c1 = Blob(self.width/2, self.height, self.col)
+								c1.rect.x = self.rect.x + self.width
+								c1.rect.y = self.rect.y
+								c1.dirx = 1
+								c2 = Blob(self.width/2, self.height, self.col)
+								c1.rect.x = self.rect.x - self.width
+								c1.rect.y = self.rect.y
+								c2.dirx = -1'''
+		blobs.add(Blob(self.width/2, self.height, self.col, rect = (self.rect.x+self.width, self.rect.y, self.width/2, self.height)),Blob(self.width/2, self.height/2, self.col, rect = (self.rect.x-self.width, self.rect.y, self.width/2,self.height)))
+		self = None
 
 blobs = pygame.sprite.Group()
 
-for i in range(8):
+for i in range(7):
 	#			#width 			 #height 			red					  green 		 blue
 	blob = Blob(randint(50,125), randint(50, 125), (150 + randint(0,100), randint(0,50), randint(0,50)))
-	blob.rect.center =(randint(blob.width,maxwidth-blob.width), randint(blob.height, maxheight-blob.height))
+	blob.rect.center = (randint(blob.width,maxwidth-blob.width), randint(blob.height, maxheight-blob.height))
 	blobs.add(blob)
 
 while not done:
@@ -156,9 +142,11 @@ while not done:
 
 
 	screen.fill(white)
-	blobs.draw(screen)
 	blobs.update()
+	blobs.draw(screen)
+	for sprite in spriteList:
+		pygame.draw.ellipse(screen, sprite.col, sprite.rect, 0)
+	pygame.display.flip()
 
 	clock.tick(30)
-	pygame.display.flip()
 

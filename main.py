@@ -15,7 +15,7 @@ pygame.display.flip()
 # bgfdnmyd
 
 class Blob(pygame.sprite.Sprite):
-	def __init__(self, width, height, col, **kwargs):#all measurements are in pixels
+	def __init__(self, width, height, col):#all measurements are in pixels
 		self.width = width
 		self.height = height
 		self.col = col
@@ -31,24 +31,39 @@ class Blob(pygame.sprite.Sprite):
 		self.image.fill(white)
 		self.rect = self.image.get_rect()
 
-	def update(self):
+	def update(self, *args):
 
 		if self.rect.left <= 0: 
 			self.dirx *= -1
-			print("left")
+			#print("left")
 		elif self.rect.right >= maxwidth: 
 			self.dirx *= -1
-			print("right")
+			#print("right")
 		if self.rect.top <= 0: 
 			self.diry *= -1
-			print("top")
+			#print("top")
 		elif self.rect.bottom >= maxheight: 
 			self.diry *= -1
-			print("bottom")
+			#print("bottom")
 		#print(self.rect.x, self.rect.y)
 
 		self.rect.x += int(self.dirx * 1)
 		self.rect.y += int(self.diry * 1)
+
+		letterPressed = args[0]
+		if letterPressed:
+			pointlist = args[1]
+			blobList = args[2]
+
+			for i in range(7):
+				cenx = blobList[i].rect.center[0]
+				ceny = blobList[i].rect.center[1]
+				point = pointlist[i]
+				if (point[0] -10 <= cenx <= point[0]+10) and (point[1] - 10 <= ceny <= point[1]+10):
+					blobList[i].dirx = 0
+					blobList[i].diry = 0
+					#print("finished", cenx, ceny)
+				
 
 		# colideList = pygame.sprite.spritecollide(self, blobs, False)
 		# for i in colideList:
@@ -123,11 +138,28 @@ class Blob(pygame.sprite.Sprite):
 		blobs.add(Blob(self.width/2, self.height, self.col, rect = (self.rect.x+self.width, self.rect.y, self.width/2, self.height)),Blob(self.width/2, self.height/2, self.col, rect = (self.rect.x-self.width, self.rect.y, self.width/2,self.height)))
 		self = None
 
+def A(blobList):
+	points = [(170,160),(230,160),(100,325),(200,325),(300,325),(50,500), (350,500)]
+	for i in range(len(blobList)):
+		blobList[i].dirx = copysign(1, points[i][0] - blobList[i].rect.center[0]) *randint(1,3)
+		blobList[i].diry = copysign(1, points[i][1] - blobList[i].rect.center[1]) *randint(1,3)
+	return points
+
+def B(blobList):
+	points = [(200,50),(100,170),(300,170),(175,240),(75,310),(300,310),(200,400)]
+	for i in range(len(blobList)):
+		blobList[i].dirx = copysign(1, points[i][0] - blobList[i].rect.center[0]) *randint(1,3)
+		blobList[i].diry = copysign(1, points[i][1] - blobList[i].rect.center[1]) *randint(1,3)
+	return points
+
+def C():
+	pass
+
 blobs = pygame.sprite.Group()
 
 for i in range(7):
 	#			#width 			 #height 			red					  green 		 blue
-	blob = Blob(randint(50,125), randint(50, 125), (150 + randint(0,100), randint(0,50), randint(0,50)))
+	blob = Blob(randint(80,130), randint(125, 175), (150 + randint(0,100), randint(0,50), randint(0,50)))
 	blob.rect.center = (randint(blob.width,maxwidth-blob.width), randint(blob.height, maxheight-blob.height))
 	blobs.add(blob)
 
@@ -135,14 +167,34 @@ while not done:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			done = True
-	
-
 
 	spriteList = blobs.sprites()
+	
+	letter = False
+	pointlist = [None for i in range(7)]
+	pressed = pygame.key.get_pressed()
+	if pressed[pygame.K_a]: 
+		char = "A"
+		letter = True
+		pointlist = A(spriteList)
+	elif pressed[pygame.K_b]: 
+		char = "B"
+		letter = True
+		pointlist = B(spriteList)
+	elif pressed[pygame.K_c]: 
+		char = "C"
+		letter = True
+		pointlist = C(spriteList)
+	elif pressed[pygame.K_SPACE]:
+		for i in spriteList:
+			if randint(0,1) == 1: i.dirx = randint(1, 3)
+			else: i.dirx = -1*randint(1,3)
 
+			if randint(0,1) == 1: i.diry = randint(1,3)
+			else: i.diry = -1*randint(1,3)
 
 	screen.fill(white)
-	blobs.update()
+	blobs.update(letter, pointlist, spriteList)
 	blobs.draw(screen)
 	for sprite in spriteList:
 		pygame.draw.ellipse(screen, sprite.col, sprite.rect, 0)

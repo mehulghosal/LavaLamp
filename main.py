@@ -45,25 +45,22 @@ class Blob(pygame.sprite.Sprite):
 		elif self.rect.bottom >= maxheight: 
 			self.diry *= -1
 			print("bottom")
-		print(self.rect.x, self.rect.y)
+		#print(self.rect.x, self.rect.y)
 
 		self.rect.x += int(self.dirx * 1)
 		self.rect.y += int(self.diry * 1)
 
-		for sprite in spriteList:
-			colideList = pygame.sprite.spritecollide(sprite, blobs, False)
-			for i in colideList:
-				combReturn = sprite.combine(i)
+	
+		colideList = pygame.sprite.spritecollide(self, blobs, False)
+		for i in colideList:
+			self.combine(i)
+
+			'''	combReturn = sprite.combine(i)
 				newBlob = combReturn[0]
 				newBlob.rect.x = combReturn[1]
 				newBlob.rect.y = combReturn[2]
 				blobs.remove(sprite, i)
-				blobs.add(newBlob)
-
-
-	'''def move(self):
-		self.x += self.direction[0] * 5
-		self.y += self.direction[1] * 5'''
+				blobs.add(newBlob)'''
 
 	 #combines two blobs if overlap, return new blob -- figure out how to tell if they overlap
 	def combine(self, another):
@@ -78,10 +75,13 @@ class Blob(pygame.sprite.Sprite):
 		nx = int((self.rect.x + self.rect.x)/2)
 		ny = int((self.rect.y + self.rect.y)/2)
 		direc = (self.dirx * another.dirx, self.diry * another.diry)
-		b = Blob(widt, heig, colr)
-		b.dirx = direc[0]
-		b.diry = direc[1]
-		return (b, nx, ny)
+		blobs.remove(another)
+		another.kill()
+		self.dirx = direc[0]
+		self.diry = direc[1]
+		self.width = widt
+		self.heig = heig
+		self.col = colr
 
 	'''
 	def divide(self):
@@ -102,7 +102,7 @@ class Blob(pygame.sprite.Sprite):
 
 blobs = pygame.sprite.Group()
 
-for i in range(1):
+for i in range(12):
 	#			#width 			 #height 			red					  green 		 blue
 	blob = Blob(randint(50,125), randint(50, 125), (150 + randint(0,100), randint(0,50), randint(0,50)))
 	blob.rect.center =(randint(blob.width,maxwidth-blob.width), randint(blob.height, maxheight-blob.height))
@@ -122,6 +122,6 @@ while not done:
 	blobs.draw(screen)
 	blobs.update()
 
-	clock.tick(30)
+	clock.tick(10)
 	pygame.display.flip()
 
